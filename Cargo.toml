@@ -1,0 +1,29 @@
+[package]
+name = "missing-square-game"
+version = "0.1.0"
+edition = "2021"
+description = "High-precision Rust WebAssembly engine for the Curry Missing Square puzzle"
+authors = ["Missing Square Systems Team"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+js-sys = "0.3"
+web-sys = { version = "0.3", features = ["console"] }
+console_error_panic_hook = "0.1.7"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false

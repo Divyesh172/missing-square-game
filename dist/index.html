@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>The Magic Triangle &mdash; Missing Square Paradox</title>
+  <meta name="description" content="A single-screen interactive science exhibit exploring the famous Curry missing square paradox.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app" class="app-container">
+    
+    <!-- TOP PERSISTENT NAVIGATION (Fixed Height, Single-Screen) -->
+    <header class="app-header">
+      <div class="breadcrumb-area">
+        <a href="#arena" class="nav-brand-btn" title="Return to Start">
+          <span>Magic Triangle</span>
+        </a>
+        <span class="breadcrumb-separator">/</span>
+        <span id="breadcrumb-topic" class="current-topic-label">1. Arena</span>
+      </div>
+
+      <nav class="nav-pill" role="tablist" aria-label="Topic Selector">
+        <button class="nav-pill-btn active" role="tab" data-topic="0" aria-selected="true" id="tab-arena">
+          <span class="nav-num">01</span><span class="nav-label">Arena</span>
+        </button>
+        <button class="nav-pill-btn" role="tab" data-topic="1" aria-selected="false" id="tab-hammock">
+          <span class="nav-num">02</span><span class="nav-label">The Slant</span>
+        </button>
+        <button class="nav-pill-btn" role="tab" data-topic="2" aria-selected="false" id="tab-slope">
+          <span class="nav-num">03</span><span class="nav-label">Slopes</span>
+        </button>
+        <button class="nav-pill-btn" role="tab" data-topic="3" aria-selected="false" id="tab-fibonacci">
+          <span class="nav-num">04</span><span class="nav-label">Fibonacci</span>
+        </button>
+        <button class="nav-pill-btn" role="tab" data-topic="4" aria-selected="false" id="tab-detective">
+          <span class="nav-num">05</span><span class="nav-label">Debunk</span>
+        </button>
+        <div class="nav-pill-glider" aria-hidden="true"></div>
+      </nav>
+
+      <div class="header-tools">
+        <button id="audio-toggle-btn" class="icon-circle-btn" title="Sound Effects On/Off" aria-label="Toggle sound">
+          <span id="audio-icon">🔊</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- HORIZONTAL MULTI-PAGE STAGE (Zero-Scroll 100dvh) -->
+    <main class="app-stage-container">
+      
+      <!-- Peripheral Navigation Chevrons -->
+      <button id="nav-prev" class="edge-nav-btn prev" aria-label="Previous Topic" disabled>&#10094;</button>
+      <button id="nav-next" class="edge-nav-btn next" aria-label="Next Topic">&#10095;</button>
+
+      <!-- Track containing all 5 viewports -->
+      <div id="stage-track" class="stage-track">
+        
+        <!-- ================================================================
+             PAGE 1: PUZZLE ARENA
+             ================================================================ -->
+        <section class="topic-viewport" id="topic-arena" role="tabpanel" aria-labelledby="tab-arena">
+          <div class="viewport-card arena-layout">
+            
+            <!-- Step Navigation Toolbar -->
+            <div class="stepper-row">
+              <div class="stepper-pill-group">
+                <button id="step-1-btn" class="mini-step-btn active" data-step="1">
+                  <span class="step-badge">1</span> <span>Triangle</span>
+                </button>
+                <button id="step-2-btn" class="mini-step-btn" data-step="2">
+                  <span class="step-badge">2</span> <span>Rearrange</span>
+                </button>
+                <button id="step-3-btn" class="mini-step-btn" data-step="3">
+                  <span class="step-badge">3</span> <span>The Hole</span>
+                </button>
+                <button id="step-4-btn" class="mini-step-btn special" data-step="4">
+                  <span class="step-badge">🔍</span> <span>Reveal Secret</span>
+                </button>
+              </div>
+
+              <!-- Compact Score Telemetry -->
+              <div class="compact-score-row">
+                <span class="score-pill">Area: <strong>32</strong></span>
+                <span class="score-pill" id="score-void-pill">Hole: <strong>0</strong></span>
+                <span class="score-pill status" id="score-status-pill">Solid Shape</span>
+              </div>
+            </div>
+
+            <!-- Main Interactive SVG Arena -->
+            <div class="arena-stage-box" id="board-stage">
+              <svg id="puzzle-svg" viewBox="0 0 1300 500" preserveAspectRatio="xMidYMid meet" class="puzzle-svg">
+                <!-- SVG Grid Pattern Matching Monty Hall Palette -->
+                <defs>
+                  <pattern id="grid-pattern" width="100" height="100" patternUnits="userSpaceOnUse">
+                    <rect width="100" height="100" fill="#FBFAF6" />
+                    <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#E7E2D5" stroke-width="1.5" />
+                    <circle cx="0" cy="0" r="2.5" fill="#DBD5C6" opacity="0.8"/>
+                  </pattern>
+                  <filter id="block-shadow" x="-8%" y="-8%" width="120%" height="125%">
+                    <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#262420" flood-opacity="0.14" />
+                  </filter>
+                  <filter id="glow-laser" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                  <pattern id="diagonal-stripe" width="20" height="20" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+                    <line x1="0" y1="0" x2="0" y2="20" stroke="#E05A47" stroke-width="5" opacity="0.35" />
+                  </pattern>
+                </defs>
+
+                <!-- 13x5 Board Background -->
+                <rect x="0" y="0" width="1300" height="500" fill="url(#grid-pattern)" rx="14" />
+
+                <!-- Board Boundary Outline -->
+                <polygon points="0,500 1300,500 1300,0" fill="none" stroke="#DBD5C6" stroke-width="3" stroke-dasharray="8,6" />
+
+                <!-- The Mystery Lozenge Strip -->
+                <polygon id="secret-lozenge" points="0,500 800,200 1300,0 500,300" fill="#E05A47" fill-opacity="0" stroke="#E05A47" stroke-width="2.5" stroke-dasharray="6,4" stroke-opacity="0" style="transition: all 0.35s ease;" />
+
+                <!-- Laser Ruler Line -->
+                <line id="laser-line" x1="0" y1="500" x2="1300" y2="0" stroke="#28536B" stroke-width="3.5" stroke-dasharray="8,6" opacity="0" filter="url(#glow-laser)" style="transition: opacity 0.3s ease;" />
+
+                <!-- Curved Exaggerated Line -->
+                <path id="exaggerated-path" d="" fill="none" stroke="#E05A47" stroke-width="4" stroke-linecap="round" opacity="0" style="transition: opacity 0.3s ease;" />
+
+                <!-- Mystery Hole Marker at (7, 3) in SVG coords -->
+                <g id="hole-marker" transform="translate(700, 300)" opacity="0" style="transition: opacity 0.4s ease;">
+                  <rect width="100" height="100" fill="url(#diagonal-stripe)" rx="8" />
+                  <rect width="100" height="100" fill="none" stroke="#E05A47" stroke-width="3" rx="8" class="pulsing-stroke" />
+                  <text x="50" y="58" text-anchor="middle" font-family="'Inter', sans-serif" font-weight="800" font-size="22" fill="#E05A47">1 × 1</text>
+                  <text x="50" y="80" text-anchor="middle" font-family="'Inter', sans-serif" font-weight="600" font-size="12" fill="#262420">EMPTY</text>
+                </g>
+
+                <!-- Puzzle Pieces Layer -->
+                <g id="pieces-layer"></g>
+              </svg>
+            </div>
+
+            <!-- Compact Inspector Control Dock -->
+            <div class="arena-controls-dock">
+              <div class="toggle-group">
+                <button id="toggle-laser-btn" class="dock-toggle-btn" title="Show True Straight Line">
+                  <span>📏 Laser Line</span>
+                </button>
+                <button id="toggle-strip-btn" class="dock-toggle-btn" title="Highlight the 1-Block Secret Sliver">
+                  <span>🥪 Secret Strip</span>
+                </button>
+              </div>
+
+              <div class="slider-box">
+                <label for="bend-slider" class="slider-label">
+                  <span>Magnify Bend:</span> <strong id="bend-value">1.0×</strong>
+                </label>
+                <input type="range" id="bend-slider" min="1.0" max="4.0" step="0.1" value="1.0" class="warm-slider" aria-label="Magnify bend">
+              </div>
+
+              <button id="btn-reset-puzzle" class="dock-action-btn" title="Reset Pieces">
+                <span>↺ Reset</span>
+              </button>
+            </div>
+
+          </div>
+        </section>
+
+
+        <!-- ================================================================
+             PAGE 2: THE SLANT (HAMMOCK & BELLY)
+             ================================================================ -->
+        <section class="topic-viewport" id="topic-hammock" role="tabpanel" aria-labelledby="tab-hammock">
+          <div class="viewport-card hammock-layout">
+            <div class="topic-header-row">
+              <span class="topic-tag">THE ILLUSION</span>
+              <h2>Bending Hypotenuse</h2>
+              <p class="topic-subtitle">Neither shape is a true triangle. One bends inward; the other bulges outward.</p>
+            </div>
+
+            <!-- Side-by-side Visual Demonstration -->
+            <div class="hammock-comparison-grid">
+              
+              <!-- Card A: The Dip -->
+              <div class="hammock-card hammock-sag">
+                <div class="hammock-card-header">
+                  <span class="card-num-tag">01</span>
+                  <div>
+                    <h3>Inward Dip (Arrangement 1)</h3>
+                    <span class="badge-sub">Red sits first</span>
+                  </div>
+                </div>
+                <div class="hammock-visual-diagram">
+                  <svg viewBox="0 0 500 220" class="sub-svg">
+                    <!-- True Line -->
+                    <line x1="30" y1="190" x2="470" y2="30" stroke="#28536B" stroke-width="2" stroke-dasharray="6,4" opacity="0.5"/>
+                    <!-- Bent Hypotenuse dipping inward -->
+                    <polyline points="30,190 320,110 470,30" fill="none" stroke="#E05A47" stroke-width="4.5" stroke-linecap="round"/>
+                    <!-- Junction point -->
+                    <circle cx="320" cy="110" r="6" fill="#E05A47"/>
+                    <!-- Sag Indicator -->
+                    <path d="M 320 90 L 320 110" stroke="#E05A47" stroke-width="2" stroke-dasharray="3,2"/>
+                    <text x="320" y="80" text-anchor="middle" font-size="13" font-weight="700" fill="#E05A47">Dips Inward (-0.5)</text>
+                    <text x="170" y="170" font-size="12" font-weight="600" fill="#57534A">Red (Slope 0.375)</text>
+                    <text x="400" y="90" font-size="12" font-weight="600" fill="#57534A">Sage (0.400)</text>
+                  </svg>
+                </div>
+                <p class="hammock-desc">Red triangle sits first (slope 0.375). Hypotenuse sags inward; total area is <strong>32 blocks</strong>.</p>
+              </div>
+
+              <!-- Card B: The Bulge -->
+              <div class="hammock-card hammock-bulge">
+                <div class="hammock-card-header">
+                  <span class="card-num-tag">02</span>
+                  <div>
+                    <h3>Outward Bulge (Arrangement 2)</h3>
+                    <span class="badge-sub">Sage sits first</span>
+                  </div>
+                </div>
+                <div class="hammock-visual-diagram">
+                  <svg viewBox="0 0 500 220" class="sub-svg">
+                    <!-- True Line -->
+                    <line x1="30" y1="190" x2="470" y2="30" stroke="#28536B" stroke-width="2" stroke-dasharray="6,4" opacity="0.5"/>
+                    <!-- Bent Hypotenuse bulging outward -->
+                    <polyline points="30,190 200,105 470,30" fill="none" stroke="#8FB78F" stroke-width="4.5" stroke-linecap="round"/>
+                    <!-- Junction point -->
+                    <circle cx="200" cy="105" r="6" fill="#8FB78F"/>
+                    <!-- Bulge Indicator -->
+                    <path d="M 200 125 L 200 105" stroke="#8FB78F" stroke-width="2" stroke-dasharray="3,2"/>
+                    <text x="200" y="145" text-anchor="middle" font-size="13" font-weight="700" fill="#2F4A34">Puffs Outward (+0.5)</text>
+                    <text x="100" y="125" font-size="12" font-weight="600" fill="#57534A">Sage (0.400)</text>
+                    <text x="340" y="60" font-size="12" font-weight="600" fill="#57534A">Red (0.375)</text>
+                  </svg>
+                </div>
+                <p class="hammock-desc">Steeper sage triangle sits first. Hypotenuse puffs out; boundary is <strong>33 blocks</strong>, leaving a <strong>1-block hole</strong>.</p>
+              </div>
+
+            </div>
+
+            <!-- Mathematical Punchline Card -->
+            <div class="punchline-card">
+              <div class="punchline-text">
+                <strong>Where did the square go?</strong>
+                <span>Dip (-0.5) + Bulge (+0.5) = 1 block difference, hidden along the hypotenuse seam.</span>
+              </div>
+              <button id="btn-jump-arena-secret" class="btn-squishy btn-squishy-sm">
+                <span>View on Puzzle ➔</span>
+              </button>
+            </div>
+
+          </div>
+        </section>
+
+
+        <!-- ================================================================
+             PAGE 3: SLOPES
+             ================================================================ -->
+        <section class="topic-viewport" id="topic-slope" role="tabpanel" aria-labelledby="tab-slope">
+          <div class="viewport-card slope-layout">
+            <div class="topic-header-row">
+              <span class="topic-tag">SLOPE ANALYSIS</span>
+              <h2>Why the Slant Isn't Straight</h2>
+              <p class="topic-subtitle">Two trails with slightly different grades meet at an imperceptible kink:</p>
+            </div>
+
+            <!-- Interactive Race Simulation Area -->
+            <div class="race-simulation-box">
+              <svg id="race-svg" viewBox="0 0 1000 360" class="race-svg">
+                <!-- Red Trail Triangle (8 wide, 3 high) -->
+                <polygon points="50,310 450,310 450,150" fill="#FAF4F0" stroke="#E05A47" stroke-width="2.5"/>
+                <line x1="50" y1="310" x2="450" y2="150" stroke="#E05A47" stroke-width="4.5" stroke-linecap="round" />
+                <text x="230" y="335" text-anchor="middle" font-size="14" font-weight="700" fill="#262420">Red: 8 Across</text>
+                <text x="475" y="235" font-size="14" font-weight="700" fill="#E05A47">3 Up</text>
+                <text x="180" y="210" font-size="13" font-weight="700" fill="#E05A47">Slope = 3/8 = 0.375 (37.5%)</text>
+
+                <!-- Sage Trail Triangle (5 wide, 2 high) -->
+                <polygon points="550,310 950,310 950,130" fill="#F4F8F4" stroke="#8FB78F" stroke-width="2.5"/>
+                <line x1="550" y1="310" x2="950" y2="130" stroke="#8FB78F" stroke-width="4.5" stroke-linecap="round" />
+                <text x="750" y="335" text-anchor="middle" font-size="14" font-weight="700" fill="#262420">Sage: 5 Across</text>
+                <text x="975" y="225" font-size="14" font-weight="700" fill="#2F4A34">2 Up</text>
+                <text x="680" y="195" font-size="13" font-weight="700" fill="#2F4A34">Slope = 2/5 = 0.400 (40.0%)</text>
+
+                <!-- Animated Hiker 1 (Red) -->
+                <g id="hiker-red" transform="translate(50, 310)">
+                  <circle cx="0" cy="-12" r="9" fill="#E05A47"/>
+                  <path d="M 0,-3 L 0,10 M -6,4 L 6,4 M -5,20 L 0,10 L 5,20" stroke="#E05A47" stroke-width="2.5" stroke-linecap="round"/>
+                </g>
+
+                <!-- Animated Hiker 2 (Sage) -->
+                <g id="hiker-green" transform="translate(550, 310)">
+                  <circle cx="0" cy="-12" r="9" fill="#2F4A34"/>
+                  <path d="M 0,-3 L 0,10 M -6,4 L 6,4 M -5,20 L 0,10 L 5,20" stroke="#2F4A34" stroke-width="2.5" stroke-linecap="round"/>
+                </g>
+              </svg>
+            </div>
+
+            <!-- Bottom Race Controls & Loupe -->
+            <div class="slope-bottom-row">
+              <button id="btn-start-race" class="btn-squishy btn-squishy-primary">
+                <span>Start race ➔</span>
+              </button>
+
+              <div class="angle-loupe-box">
+                <span class="loupe-icon">🔬</span>
+                <div class="loupe-info">
+                  <strong>Angle difference:</strong> 21.80° vs 20.56° = <strong>1.24°</strong> (too subtle for the eye to detect).
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+
+        <!-- ================================================================
+             PAGE 4: FIBONACCI
+             ================================================================ -->
+        <section class="topic-viewport" id="topic-fibonacci" role="tabpanel" aria-labelledby="tab-fibonacci">
+          <div class="viewport-card fibonacci-layout">
+            <div class="topic-header-row">
+              <span class="topic-tag">NUMBER PATTERN</span>
+              <h2>The Fibonacci Secret</h2>
+              <p class="topic-subtitle">Dimensions 2, 3, 5, 8, 13 satisfy Cassini's identity:</p>
+            </div>
+
+            <!-- Stepping Stones Visual Row -->
+            <div class="stepping-stones-row">
+              <div class="stone-item" data-n="1">
+                <span class="stone-num">1</span>
+                <span class="stone-label">F₁</span>
+              </div>
+              <div class="stone-arrow">➔</div>
+              <div class="stone-item" data-n="2">
+                <span class="stone-num">1</span>
+                <span class="stone-label">F₂</span>
+              </div>
+              <div class="stone-arrow">➔</div>
+              <div class="stone-item" data-n="3">
+                <span class="stone-num">2</span>
+                <span class="stone-label">Sage H</span>
+              </div>
+              <div class="stone-arrow">➔</div>
+              <div class="stone-item active-target" data-n="4">
+                <span class="stone-num">3</span>
+                <span class="stone-label">Red H</span>
+              </div>
+              <div class="stone-arrow">➔</div>
+              <div class="stone-item active-target highlight" data-n="5">
+                <span class="stone-num">5</span>
+                <span class="stone-label">Sage Base</span>
+              </div>
+              <div class="stone-arrow">➔</div>
+              <div class="stone-item active-target" data-n="6">
+                <span class="stone-num">8</span>
+                <span class="stone-label">Red Base</span>
+              </div>
+              <div class="stone-arrow">➔</div>
+              <div class="stone-item" data-n="7">
+                <span class="stone-num">13</span>
+                <span class="stone-label">Total Base</span>
+              </div>
+            </div>
+
+            <!-- Cassini's Identity Card -->
+            <div class="cassini-math-card">
+              <div class="cassini-equation">
+                <div class="equation-box">
+                  <span class="eq-sub">Neighbors Product:</span>
+                  <span class="eq-val" id="fib-neighbors">3 × 8 = 24</span>
+                </div>
+                <span class="eq-vs">vs</span>
+                <div class="equation-box">
+                  <span class="eq-sub">Middle Squared:</span>
+                  <span class="eq-val" id="fib-middle">5 × 5 = 25</span>
+                </div>
+                <span class="eq-equals">=</span>
+                <div class="equation-box result">
+                  <span class="eq-sub">Difference:</span>
+                  <span class="eq-val" id="fib-diff">EXACTLY 1</span>
+                </div>
+              </div>
+              <p class="cassini-explanation">
+                <strong>Cassini's Identity:</strong> <em>F<sub>n-1</sub>F<sub>n+1</sub> − F<sub>n</sub><sup>2</sup> = (−1)<sup>n</sup></em>. Multiplying neighbors always differs from the square of the middle term by <strong>exactly 1</strong>. That is why the missing area is always 1 block.
+              </p>
+            </div>
+
+            <!-- Interactive Slider: Step to Larger Fibonacci Puzzles -->
+            <div class="fibonacci-slider-card">
+              <div class="fib-slider-header">
+                <span>Fibonacci Triples:</span>
+                <strong id="fib-set-name">Classic Curry (3, 5, 8)</strong>
+              </div>
+              <input type="range" id="fib-slider" min="3" max="7" step="1" value="5" class="warm-slider" aria-label="Fibonacci puzzle slider">
+              <div class="fib-stat-pill" id="fib-steepness-error">
+                Slope difference: 1/40 = 0.025
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+
+        <!-- ================================================================
+             PAGE 5: DEBUNK
+             ================================================================ -->
+        <section class="topic-viewport" id="topic-detective" role="tabpanel" aria-labelledby="tab-detective">
+          <div class="viewport-card detective-layout">
+            <div class="topic-header-row">
+              <span class="topic-tag">FACT CHECK</span>
+              <h2>Mystery Debunked</h2>
+              <p class="topic-subtitle">Quick answers to common questions:</p>
+            </div>
+
+            <!-- 4 Clean Question Cards in 2x2 Grid -->
+            <div class="detective-qa-grid">
+              
+              <div class="qa-card">
+                <div class="qa-card-top">
+                  <span class="card-num-tag">01</span>
+                  <h4>Is it a real triangle?</h4>
+                </div>
+                <p><strong>No.</strong> It is a 4-sided quadrilateral with a slight 1.24° kink along the hypotenuse.</p>
+              </div>
+
+              <div class="qa-card">
+                <div class="qa-card-top">
+                  <span class="card-num-tag">02</span>
+                  <h4>Why does it look straight?</h4>
+                </div>
+                <p><strong>Human vision.</strong> The 0.077-unit bend is smoothed over 13 units by our visual perception.</p>
+              </div>
+
+              <div class="qa-card">
+                <div class="qa-card-top">
+                  <span class="card-num-tag">03</span>
+                  <h4>Who created it?</h4>
+                </div>
+                <p><strong>Paul Curry (1953).</strong> Created by amateur magician Paul Curry, popularized by Martin Gardner.</p>
+              </div>
+
+              <div class="qa-card">
+                <div class="qa-card-top">
+                  <span class="card-num-tag">04</span>
+                  <h4>Does it work in physical wood?</h4>
+                </div>
+                <p><strong>Yes.</strong> Physical saw cuts and wood grain easily conceal the imperceptible bend.</p>
+              </div>
+
+            </div>
+
+            <!-- Badges Row -->
+            <div class="badges-earned-bar">
+              <span class="badges-title">Exhibit Badges:</span>
+              <div class="badges-pill-row">
+                <span class="badge-tag unlocked">🔍 Sleuth</span>
+                <span class="badge-tag unlocked">🪓 Buster</span>
+                <span class="badge-tag unlocked">🧗 Climber</span>
+                <span class="badge-tag unlocked">🐇 Fibonacci</span>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- BOTTOM ACTION DOCK (Fixed Height, Single-Screen) -->
+    <footer class="app-dock">
+      <div class="dock-left">
+        <button id="btn-dock-prev" class="dock-nav-btn" disabled>
+          <span>◀ Prev</span>
+        </button>
+      </div>
+
+      <div class="dock-center">
+        <div class="slide-dots" role="tablist" aria-label="Page dots">
+          <button class="dot active" data-topic="0" aria-label="Page 1"></button>
+          <button class="dot" data-topic="1" aria-label="Page 2"></button>
+          <button class="dot" data-topic="2" aria-label="Page 3"></button>
+          <button class="dot" data-topic="3" aria-label="Page 4"></button>
+          <button class="dot" data-topic="4" aria-label="Page 5"></button>
+        </div>
+        <span class="page-indicator" id="page-counter">1 / 5</span>
+      </div>
+
+      <div class="dock-right">
+        <button id="btn-dock-next" class="dock-nav-btn primary">
+          <span>Next ➔</span>
+        </button>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

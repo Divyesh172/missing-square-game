@@ -1,0 +1,19 @@
+{
+  "name": "missing-square-game",
+  "type": "module",
+  "collaborators": [
+    "Missing Square Systems Team"
+  ],
+  "description": "High-precision Rust WebAssembly engine for the Curry Missing Square puzzle",
+  "version": "0.1.0",
+  "files": [
+    "missing_square_game_bg.wasm",
+    "missing_square_game.js",
+    "missing_square_game.d.ts"
+  ],
+  "main": "missing_square_game.js",
+  "types": "missing_square_game.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
