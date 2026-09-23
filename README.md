@@ -1,8 +1,9 @@
 # The Magic Triangle &mdash; Missing Square Paradox
 
-[![Netlify Status](https://img.shields.io/badge/Live%20Deploy-Netlify-00C7B7?style=for-the-badge&logo=netlify)](https://missing-square-game.netlify.app)
+[![Netlify Status](https://img.shields.io/badge/Live%20Deploy-Netlify-00C7B7?style=for-the-badge&logo=netlify)](https://missing-square-game-divyesh.netlify.app)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/Divyesh172/missing-square-game)
 
+- **🌐 Live on Netlify:** [https://missing-square-game-divyesh.netlify.app](https://missing-square-game-divyesh.netlify.app)
 - **🌐 GitHub Repository:** [https://github.com/Divyesh172/missing-square-game](https://github.com/Divyesh172/missing-square-game)
 
 An interactive, high-performance mathematical simulation of Paul Curry's **Missing Square Paradox**, powered by **Rust** and **WebAssembly**, designed with a warm tactile museum aesthetic matching the Monty Hall Simulation.
